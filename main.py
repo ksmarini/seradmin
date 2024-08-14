@@ -6,6 +6,10 @@ print("Criar um venv e instalar a biblioteca paramiko")
 
 sudo useradd -m -d /home/$USUARIO -s /bin/bash -c "$USUARIO - Depto Qualidade" -U $USUARIO -G sudo -p $(echo Mudar123 | openssl passwd -1 -stdin) && sudo passwd --expire $USUARIO
 
+# Este abaixo funciona no shell
+if [[ ! -f users.txt ]]; then echo "Arquivo users.txt não encontrado!"; exit 1; fi; while IFS= read -r USUARIO; do sudo useradd -m -d /home/"$USUARIO" -s /bin/bash -c "$USUARIO - Depto Qualidade" -U "$USUARIO" -G sudo -p "$(echo MudeSuaSenha | openssl passwd -1 -stdin)" && sudo passwd --expire "$USUARIO"; done < users.txt
+
+
 try:
     ssh_client.connect(hostname, port, username, password)
     
