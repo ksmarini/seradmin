@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# export SMTP_SERVER="seuwebmail.gov.br:587" SMTP_USER="seu_usuario@gov.br" SMTP_PASSWORD='sua_senha_dificil' FROM_EMAIL="seu_email@gov.br"
 ##############################################
 # Configurações via variáveis de ambiente (OBRIGATÓRIO definir antes de executar!)
 ##############################################
