@@ -12,7 +12,6 @@
 
 CSV_FILE="usuarios.csv"                    # Arquivo CSV com: usuario;departamento;email
 LOG_FILE="user_creator.log"                 # Arquivo de log
-EMAIL_SUBJECT="[IMPORTANTE] Credenciais de Acesso - Servidor de Produção"
 
 ##############################################
 # Funções básicas
@@ -89,6 +88,7 @@ log "Iniciando processo de criação de usuários"
 
 IP_ADDRESS=$(get_ip)
 HOSTNAME=$(hostname)
+EMAIL_SUBJECT="[IMPORTANTE] Credenciais de Acesso - Servidor $HOSTNAME"
 
 while IFS=';' read -r usuario departamento email; do
     
@@ -111,7 +111,10 @@ while IFS=';' read -r usuario departamento email; do
 
 	email_body="Caro(a) $usuario,
 
-Sua conta com acesso administrativo no servidor $HOSTNAME com o IP $IP_ADDRESS foi criada.
+Sua conta com acesso administrativo no servidor $IP_ADDRESS foi criada.
+
+Para acessar use:
+ssh $usuario@$IP_ADDRESS
 
 Credenciais temporárias:
 • Usuário: $usuario
