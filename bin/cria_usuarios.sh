@@ -14,7 +14,7 @@
 #
 # Opções:
 #  -n, --dry-run: Ativa o modo Dry Run (simulação, nenhuma alteração real será feita).
-#  -h, --html: Envia e-mails em formato HTML em vez de texto simples.
+#  -t, --text: Envia e-mails em formato texto simples em vez de HTML.
 ##############################################
 
 # Definir o diretório do script e o diretório raiz do projeto
@@ -55,8 +55,8 @@ else
   echo "Grupo administrativo detectado automaticamente: $ADMIN_GROUP"
 fi
 
-DRY_RUN=false  # Flag para indicar se o modo de simulação está ativado
-USE_HTML=false # Flag para indicar se os e-mails devem ser enviados em formato HTML
+DRY_RUN=false # Flag para indicar se o modo de simulação está ativado
+USE_HTML=true # Flag para indicar se os e-mails devem ser enviados em formato HTML (agora padrão é true)
 
 # Garantir que o diretório de logs exista
 mkdir -p "$(dirname "$LOG_FILE")" 2>/dev/null || true
@@ -82,7 +82,7 @@ source "${PROJECT_ROOT}/lib/logging.sh"
 source "${PROJECT_ROOT}/lib/system_checks.sh"
 source "${PROJECT_ROOT}/lib/csv_utils.sh"
 source "${PROJECT_ROOT}/lib/user_operations.sh"
-source "${PROJECT_ROOT}/lib/email_services.sh"
+source "${PROJECT_ROOT}/lib/email_services.sh" # Usar a versão com suporte a templates
 
 # Registrar o grupo administrativo no log
 log_info "Configurado grupo administrativo: $ADMIN_GROUP"
@@ -91,9 +91,9 @@ log_info "Configurado grupo administrativo: $ADMIN_GROUP"
 # Processamento de Opções de Linha de Comando
 ##############################################
 usage() {
-  echo "Uso: $0 [-n | --dry-run] [-h | --html]" >&2
+  echo "Uso: $0 [-n | --dry-run] [-t | --text]" >&2
   echo "  -n, --dry-run: Ativa o modo Dry Run (simulação, nenhuma alteração real será feita)." >&2
-  echo "  -h, --html: Envia e-mails em formato HTML em vez de texto simples." >&2
+  echo "  -t, --text: Envia e-mails em formato texto simples em vez de HTML." >&2
   exit 1
 }
 
@@ -104,8 +104,8 @@ while [[ $# -gt 0 ]]; do
     DRY_RUN=true
     shift
     ;;
-  -h | --html)
-    USE_HTML=true
+  -t | --text)
+    USE_HTML=false
     shift
     ;;
   --)
@@ -133,11 +133,11 @@ if [ "$DRY_RUN" = "true" ]; then
   log_info "MODO DRY RUN ATIVADO. Nenhuma alteração real será feita no sistema."
 fi
 
-if [ "$USE_HTML" = "true" ]; then
-  log_info "Modo HTML ativado para e-mails."
+if [ "$USE_HTML" = "false" ]; then
+  log_info "Modo texto simples ativado para e-mails."
 fi
 
-# Verifica variáveis críticas de ambiente
+# Verifica variáveis críticas de ambiente - MELHORIA: Verificar mesmo em modo dry-run
 missing_vars=()
 for var in SMTP_SERVER SMTP_USER SMTP_PASSWORD FROM_EMAIL; do
   [ -z "${!var:-}" ] && missing_vars+=("$var")
